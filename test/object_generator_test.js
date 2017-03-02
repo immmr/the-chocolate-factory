@@ -1,5 +1,5 @@
 import {test} from 'tap'
-import ObjectGenerator from './object_generator'
+import ObjectGenerator from '../lib/object_generator'
 
 test('create static objects', g => {
   g.test('creates a shallow static object', t => {
@@ -54,7 +54,7 @@ test('create dynamic objects', g => {
     }
 
     const result = generator.compile(template, options)
-    t.equal(result.id, '3', `expected 3, got ${result.id}`)
+    t.equal(result.id, 3, `expected 3, got ${result.id}`)
     t.end()
   })
 

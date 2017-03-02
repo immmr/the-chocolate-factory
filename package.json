@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "babel-tap object_generator_test.js",
-    "test-watch": "nodemon --exec 'npm test'"
+    "test": "babel-tap test/**/*_test.js",
+    "test-watch": "nodemon --exec 'npm test'",
+    "babel-node": "babel-node"
   },
   "keywords": [],
   "author": "",
