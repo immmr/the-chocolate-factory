@@ -162,5 +162,4 @@ test('create dynamic objects', g => {
   })
 
   g.end()
-
 })

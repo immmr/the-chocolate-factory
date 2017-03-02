@@ -43,8 +43,6 @@ test('deeply nested object', t => {
     }
   }
 
-
   t.same(output, expectation, `unexpected output ${output}`)
   t.end()
 })
-

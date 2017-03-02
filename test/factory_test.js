@@ -16,7 +16,7 @@ test('creating basic objects', g => {
     const result = factory.build('user')
 
     const expectation = {
-      id:1,
+      id: 1,
       name: 'Claire'
     }
 
@@ -38,7 +38,7 @@ test('creating basic objects', g => {
     const result = factory.build('message')
 
     const expectation = {
-      id:1,
+      id: 1,
       text: 'Say what?'
     }
 
@@ -160,4 +160,3 @@ test('building with traits', g => {
 
   g.end()
 })
-
