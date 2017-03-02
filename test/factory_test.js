@@ -71,9 +71,9 @@ test('creating dynamic objects', g => {
     const factory = new Factory(templates, {seed: 1})
     const result = factory.build('user')
 
-    t.equal(result.id, 7, `unexpected result ${result.id}`)
+    t.equal(result.id, 6, `unexpected result ${result.id}`)
     t.equal(result.name, 'Herbert')
-    t.equal(result.nested.code, 'Herbert:ID7', `unexpected ${result}`)
+    t.equal(result.nested.code, 'Herbert:ID6', `unexpected ${result.nested.code}`)
     t.end()
   })
 

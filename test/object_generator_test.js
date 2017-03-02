@@ -127,17 +127,35 @@ test('create dynamic objects', g => {
     }
     const result = compiler.compile(template, options)
     const expectation = {
-      id: 7,
+      id: 6,
       name: 'Frank',
       admin: false,
       access: {
-        id: 7,
-        code: 'Frank:7',
-        token: 7
+        id: 6,
+        code: 'Frank:6',
+        token: 8
       }
     }
 
     t.same(result, expectation, `unexpected result ${JSON.stringify(result)}`)
+    t.end()
+  })
+
+  g.test('generates different results for different keys', t => {
+    const compiler = new TemplateCompiler(1)
+    const template = {
+      id1: '{{ id1 }}',
+      id2: '{{ id2 }}'
+    }
+
+    const options = {
+      generateId1: rand => rand(100),
+      generateId2: rand => rand(100)
+    }
+
+    const result = compiler.compile(template, options)
+
+    t.notEqual(result.id1, result.id2, 'ids should be different')
     t.end()
   })
 
