@@ -1,5 +1,5 @@
 import {test} from 'tap'
-import Factory from '../lib/factory'
+import Factory from '../lib/chocolate_factory'
 
 test('creating basic objects', g => {
   g.test('creates a user', t => {
