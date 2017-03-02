@@ -40,6 +40,22 @@ test('create static objects', g => {
     t.same(compiler.compile(template), template)
     t.end()
   })
+
+  g.test('creates a defensive copy of the given object', t => {
+    const compiler = new TemplateCompiler()
+    const template = {
+      id: 1
+    }
+
+    const result = compiler.compile(template)
+    t.same(result.id, 1, `unexpected result ${result.id}`)
+
+    // make sure result cannot be mutated
+    template.id = 2
+    t.same(result.id, 1, `unexpected result ${result.id}`)
+    t.end()
+  })
+
   g.end()
 })
 
