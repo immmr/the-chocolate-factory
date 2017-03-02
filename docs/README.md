@@ -92,7 +92,7 @@ const templates = {
  user: {
    base: {
      // interpolation. will expect `user.options.generateId` to exist
-     id: '{{ id }},
+     id: '{{ id }}',
      name: 'Tsukasa'
    },
 
@@ -186,8 +186,8 @@ const options = {
   // returna a random name
   generateName: rand => ['Ashish', 'Derya', 'Jo'][rand(3)],
 
-  // returns a random hash
-  generateHash: rand => rand.hashString(rand.string(10))
+  // returns a random hash (using md5-library)
+  generateHash: rand => md5(rand.string(10))
 }
 
 compiler.compile(template, options)
