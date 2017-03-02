@@ -44,10 +44,10 @@ test('create static objects', g => {
 })
 
 test('create dynamic objects', g => {
-  g.test('generates an __id__', t => {
+  g.test('generates an {{ id }}', t => {
     const generator = new ObjectGenerator(1)
     const template = {
-      id: '__id__'
+      id: '{{ id }}'
     }
     const options = {
       generateId: rand => rand(10)
@@ -58,30 +58,50 @@ test('create dynamic objects', g => {
     t.end()
   })
 
-  g.test('generates a __name__', t => {
+  g.test('generates a {{ name }}', t => {
     const generator = new ObjectGenerator(1)
     const template = {
-      name: '__name__'
+      name: '{{ name }}'
     }
     const options = {
       generateName: rand => ['Hugo', 'Derya', 'Ashish'][rand(3)]
     }
 
     const result = generator.compile(template, options)
-    t.equal(result.name, 'Derya', `expected 'Derya', got ${result.name}`)
+    t.equal(result.name, 'Derya', `unexpected result ${result.name}`)
+    t.end()
+  })
+
+  g.test('can deal with different whitespaces', t => {
+    const generator = new ObjectGenerator(1)
+    const template = {
+      name1: '{{  name }}',
+      name2: '{{name  }}',
+      name3: '{{ name}}',
+      name4: '{{name}}'
+    }
+    const options = {
+      generateName: rand => ['Hugo', 'Claire', 'Ashish'][rand(3)]
+    }
+
+    const result = generator.compile(template, options)
+    t.equal(result.name1, 'Claire', `unexpected result ${result.name1}`)
+    t.equal(result.name2, 'Claire', `unexpected result ${result.name2}`)
+    t.equal(result.name3, 'Claire', `unexpected result ${result.name3}`)
+    t.equal(result.name4, 'Claire', `unexpected result ${result.name4}`)
     t.end()
   })
 
   g.test('compiles a complicated object', t => {
     const generator = new ObjectGenerator(1)
     const template = {
-      id: '__id__',
-      name: '__name__',
+      id: '{{ id }}',
+      name: '{{ name }}',
       admin: false,
       access: {
-        id: '__id__',
-        code: '__name__:__id__',
-        token: '__token__'
+        id: '{{ id }}',
+        code: '{{ name }}:{{ id }}',
+        token: '{{ token }}'
       }
     }
     const options = {
@@ -102,6 +122,26 @@ test('create dynamic objects', g => {
     }
 
     t.same(result, expectation, `unexpected result ${JSON.stringify(result)}`)
+    t.end()
+  })
+
+  g.test('throws an error if interpolation is attemped w/o options', t => {
+    const generator = new ObjectGenerator(1)
+    const template = {
+      id: '{{ id }}'
+    }
+
+    t.throws(() => generator.compile(template), new Error('missing argument'))
+    t.end()
+  })
+
+  g.test('throws an error if callback-function is missing', t => {
+    const generator = new ObjectGenerator(1)
+    const template = {
+      id: '{{ id }}'
+    }
+
+    t.throws(() => generator.compile(template, {}), new Error('could not find'))
     t.end()
   })
 

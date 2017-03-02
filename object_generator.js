@@ -9,23 +9,23 @@ class ObjectGenerator {
 
   compile (template, options) {
     return deepMap(template, value => {
-      const regEx = /__[^_]+__/g
+      if (typeof value !== 'string') return value
 
-      if (typeof value === 'string' && value.match(/__[^_]+__/g)) {
-        return value.replace(/__[^_]+__/g, subString => {
-          // reduce '__id__' to 'id'
-          let variable = subString.match(/__(.+)__/)[1]
+      return value.replace(/{{\s*\w+\s*}}/g, subString => {
+        if (!options) throw new Error('missing argument: options')
 
-          // and create full function name like 'generateId'
-          let fn = `generate${variable[0].toUpperCase() + variable.slice(1)}`
+        // reduce '__id__' to 'id'
+        let variable = subString.match(/{{\s*(\w+)+\s*}}/)[1]
 
-          // call the function with freshly seeded rand-object
-          this.rand.seed(this.seed)
-          return options[fn](this.rand)
-        })
-      }
+        // and create full function name like 'generateId'
+        let fn = `generate${variable[0].toUpperCase() + variable.slice(1)}`
 
-      return value
+        // call the function with freshly seeded rand-object
+        if (!options[fn]) throw new Error(`could not find options.${fn}`)
+
+        this.rand.seed(this.seed)
+        return options[fn](this.rand)
+      })
     })
   }
 }
