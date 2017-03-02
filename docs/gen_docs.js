@@ -5,6 +5,7 @@ import { version } from '../package.json'
 
 let content = jsdoc2md.renderSync({
   files: [
+    'index.js',
     'lib/*.js'
   ],
   version: version

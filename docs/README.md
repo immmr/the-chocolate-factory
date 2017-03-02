@@ -2,16 +2,15 @@
 
 <dl>
 <dt><a href="#ChocolateFactory">ChocolateFactory</a></dt>
-<dd><p>ChocolateFactory constructs objects from templates by
-  copying and interpolating values.</p>
-<p>  Templates have to follow some conventions. The template for each class
-  has to define at least a <code>base</code> case, the default values that the
-  fabricated object should have. If values need to be interpolated,
-  the interpolator will look in the <code>options</code>-section for functions
-  called <code>generateSomevalue</code>, so the options-section has to be provided.
-  Finally, if traits should be created, the name of the trait has to
-  be specified along with the attributes it should set. See the examples
-  for more information.</p>
+<dd><p>ChocolateFactory constructs objects from templates by copying and interpolating values.</p>
+<p>Templates have to follow some conventions. The template for each class
+has to define at least a <code>base</code> case, the default values that the
+fabricated object should have. If values need to be interpolated,
+the interpolator will look in the <code>options</code>-section for functions
+called <code>generateSomevalue</code>, so the options-section has to be provided.
+Finally, if traits should be created, the name of the trait has to
+be specified along with the attributes it should set. See the examples
+for more information.</p>
 </dd>
 <dt><a href="#TemplateCompiler">TemplateCompiler</a></dt>
 <dd><p>Helper class that transforms templates to JavaScript objects.
@@ -28,17 +27,16 @@
 <a name="ChocolateFactory"></a>
 
 ## ChocolateFactory
-ChocolateFactory constructs objects from templates by
-  copying and interpolating values.
+ChocolateFactory constructs objects from templates by copying and interpolating values.
 
-  Templates have to follow some conventions. The template for each class
-  has to define at least a `base` case, the default values that the
-  fabricated object should have. If values need to be interpolated,
-  the interpolator will look in the `options`-section for functions
-  called `generateSomevalue`, so the options-section has to be provided.
-  Finally, if traits should be created, the name of the trait has to
-  be specified along with the attributes it should set. See the examples
-  for more information.
+Templates have to follow some conventions. The template for each class
+has to define at least a `base` case, the default values that the
+fabricated object should have. If values need to be interpolated,
+the interpolator will look in the `options`-section for functions
+called `generateSomevalue`, so the options-section has to be provided.
+Finally, if traits should be created, the name of the trait has to
+be specified along with the attributes it should set. See the examples
+for more information.
 
 **Kind**: global class  
 
