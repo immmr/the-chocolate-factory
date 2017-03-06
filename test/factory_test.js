@@ -182,6 +182,20 @@ test('building with traits', g => {
     t.end()
   })
 
+  g.test('throws an error if trait does not exist', t => {
+    const templates = {
+      user: {
+        base: {
+          name: 'So Yang'
+        }
+      }
+    }
+
+    const factory = new Factory(templates)
+    t.throws(() => factory.build('user', 'admin'), 'should throw error')
+    t.end()
+  })
+
   g.end()
 })
 
