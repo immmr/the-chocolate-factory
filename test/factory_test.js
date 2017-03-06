@@ -184,3 +184,35 @@ test('building with traits', g => {
 
   g.end()
 })
+
+test('building multiple objects', g => {
+  g.test('does not use the same seed for subsequent compilers', t => {
+    const templates = {
+      user: {
+        base: {
+          id: '{{ id }}'
+        },
+        options: {
+          generateId: rand => rand.string(10)
+        }
+      }
+    }
+
+    const factory = new Factory(templates)
+    const user1 = factory.build('user')
+    const user2 = factory.build('user')
+    const user3 = factory.build('user')
+    const user4 = factory.build('user')
+    const user5 = factory.build('user')
+    const user6 = factory.build('user')
+
+    t.notEqual(user1.id, user2.id, `did not expect equality of ${user1.id}`)
+    t.notEqual(user2.id, user3.id, `did not expect equality of ${user2.id}`)
+    t.notEqual(user3.id, user4.id, `did not expect equality of ${user3.id}`)
+    t.notEqual(user4.id, user5.id, `did not expect equality of ${user4.id}`)
+    t.notEqual(user5.id, user6.id, `did not expect equality of ${user5.id}`)
+    t.end()
+  })
+
+  g.end()
+})
