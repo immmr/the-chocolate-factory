@@ -1,4 +1,5 @@
 import {test} from 'tap'
+
 import {deepMap} from '../lib/utils'
 
 test('object with a single value', t => {

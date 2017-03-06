@@ -158,5 +158,29 @@ test('building with traits', g => {
     t.end()
   })
 
+  g.test('does not mutate base-templates', t => {
+    const templates = {
+      user: {
+        base: {
+          age: 30
+        },
+
+        old: {
+          age: 80
+        }
+      }
+    }
+
+    const factory = new Factory(templates)
+    const user1 = factory.build('user')
+    const user2 = factory.build('user', 'old')
+    const user3 = factory.build('user')
+
+    t.equal(user1.age, 30, `unexpected result ${user1.age}`)
+    t.equal(user2.age, 80, `unexpected result ${user2.age}`)
+    t.equal(user3.age, 30, `unexpected result ${user3.age}`)
+    t.end()
+  })
+
   g.end()
 })
