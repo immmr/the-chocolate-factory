@@ -1,6 +1,6 @@
 import {test} from 'tap'
 
-import {deepMap} from '../lib/utils'
+import {deepMap, reviveValues} from '../lib/utils'
 
 test('object with a single value', t => {
   const result = deepMap({id: 2}, value => 2 * value)
@@ -45,5 +45,18 @@ test('deeply nested object', t => {
   }
 
   t.same(output, expectation, `unexpected output ${output}`)
+  t.end()
+})
+
+test('does not revive strings starting with +', t => {
+  const result = reviveValues({
+    id: '123',
+    phone: '+123',
+    balance: '-123'
+  })
+
+  t.type(result.id, 'number', `unexpected type ${typeof result.id}`)
+  t.type(result.phone, 'string', `unexpected type ${typeof result.phone}`)
+  t.type(result.balance, 'number', `unexpected type ${typeof result.balance}`)
   t.end()
 })
