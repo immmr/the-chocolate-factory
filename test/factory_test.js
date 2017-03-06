@@ -46,6 +46,12 @@ test('creating basic objects', g => {
     t.end()
   })
 
+  g.test('throws an error if factory is not defined', t => {
+    const factory = new Factory({})
+    t.throws(() => factory.build('user'), new Error('not defined'))
+    t.end()
+  })
+
   g.end()
 })
 
