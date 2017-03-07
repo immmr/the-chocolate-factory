@@ -2,14 +2,16 @@
   "name": "the-chocolate-factory",
   "version": "0.0.0-development",
   "description": "Small template-based factories-library",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "pretest": "standard **/*.js",
     "test": "babel-tap test/**/*_test.js",
     "test-watch": "nodemon --exec 'npm test'",
     "docs": "babel-node './docs/gen_docs.js'",
     "babel-node": "babel-node",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "compile": "babel -d dist/ lib/",
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
