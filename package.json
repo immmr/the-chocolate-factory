@@ -1,7 +1,9 @@
 {
-  "name": "the_chocolate_factory",
-  "version": "1.0.0",
-  "description": "",
+  "name": "the-chocolate-factory",
+
+  "version": "0.0.1",
+
+  "description": "Small template-based factories-library",
   "main": "index.js",
   "scripts": {
     "pretest": "standard **/*.js",
@@ -10,9 +12,20 @@
     "docs": "babel-node './docs/gen_docs.js'",
     "babel-node": "babel-node"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/immmr/the-chocolate-factory"
+  },
+
+  "bugs": {
+    "url": "https://github.com/immmr/the-chocolate-factory/issues"
+  },
+
+  "homepage": "https://github.com/immmr/the-chocolate-factory",
+
+  "keywords": ["testing", "factories"],
+  "author": "Matthias Dumke",
+  "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
