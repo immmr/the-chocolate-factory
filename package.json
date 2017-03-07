@@ -1,8 +1,6 @@
 {
   "name": "the-chocolate-factory",
-
-  "version": "0.0.1",
-
+  "version": "0.0.0-development",
   "description": "Small template-based factories-library",
   "main": "index.js",
   "scripts": {
@@ -10,20 +8,21 @@
     "test": "babel-tap test/**/*_test.js",
     "test-watch": "nodemon --exec 'npm test'",
     "docs": "babel-node './docs/gen_docs.js'",
-    "babel-node": "babel-node"
+    "babel-node": "babel-node",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/immmr/the-chocolate-factory"
   },
-
   "bugs": {
     "url": "https://github.com/immmr/the-chocolate-factory/issues"
   },
-
   "homepage": "https://github.com/immmr/the-chocolate-factory",
-
-  "keywords": ["testing", "factories"],
+  "keywords": [
+    "testing",
+    "factories"
+  ],
   "author": "Matthias Dumke",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -32,7 +31,8 @@
     "babel-tap": "^5.0.0",
     "jsdoc-to-markdown": "^3.0.0",
     "nodemon": "^1.11.0",
-    "tap": "^10.2.2"
+    "tap": "^10.2.2",
+    "semantic-release": "^6.3.2"
   },
   "babel": {
     "presets": [
