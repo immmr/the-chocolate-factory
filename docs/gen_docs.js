@@ -11,4 +11,4 @@ let content = jsdoc2md.renderSync({
   version: version
 })
 
-fs.writeFileSync('docs/README.md', content)
+fs.writeFileSync('README.md', content)
