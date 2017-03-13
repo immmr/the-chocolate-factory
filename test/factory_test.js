@@ -11,16 +11,15 @@ test('creating basic objects', g => {
         }
       }
     }
-
     const factory = new Factory(templates)
     const result = factory.build('user')
 
-    const expectation = {
+    const expected = {
       id: 1,
       name: 'Claire'
     }
 
-    t.same(result, expectation, `unexpected result ${JSON.stringify(result)}`)
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
@@ -37,12 +36,32 @@ test('creating basic objects', g => {
     const factory = new Factory(templates)
     const result = factory.build('message')
 
-    const expectation = {
+    const expected = {
       id: 1,
       text: 'Say what?'
     }
 
-    t.same(result, expectation, `unexpected result ${JSON.stringify(result)}`)
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
+
+  g.test('works with a defensive copy of the template', t => {
+    const templates = {
+      user: {
+        base: {
+          name: 'Foucault'
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    templates.user.base.name = 'Derrida'
+    const result = factory.build('user')
+
+    const expected = {
+      name: 'Foucault'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
@@ -55,69 +74,120 @@ test('creating basic objects', g => {
   g.end()
 })
 
-test('creating dynamic objects', g => {
-  g.test('replaces id and name', t => {
+test('setting dependent properties', g => {
+  g.test('adds a property dynamically', t => {
     const templates = {
       user: {
         base: {
-          id: '{{ id }}',
-          name: '{{ name }}',
-          nested: {
-            code: '{{ name }}:ID{{ id }}'
-          },
-          admin: false
+          id: () => 14,
+          name: 'Merleau-Ponty'
         },
-        options: {
-          generateId: rand => rand(20),
-          generateName: rand => 'Herbert'
+
+        afterBuild: user => {
+          user.token = `::${ user.id }::`
         }
       }
     }
-
-    const factory = new Factory(templates, {seed: 1})
+    const factory = new Factory(templates)
     const result = factory.build('user')
 
-    t.equal(result.id, 6, `unexpected result ${result.id}`)
-    t.equal(result.name, 'Herbert')
-    t.equal(result.nested.code, 'Herbert:ID6', `unexpected ${result.nested.code}`)
+    const expected = {
+      id: 14,
+      name: 'Merleau-Ponty',
+      token: '::14::'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
-  g.end()
-})
-
-test('adding custom attributes', g => {
-  g.test('with static objects', t => {
+  g.test('overwrites an existing property', t => {
     const templates = {
       user: {
         base: {
-          name: 'Lisa Mona',
-          address: {
-            city: 'Sim City',
-            street: 'Sesame street 5'
+          id: () => 14,
+          name: 'Merleau-Ponty'
+        },
+
+        afterBuild: user => {
+          user.id = `::${ user.id }::`
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('user')
+
+    const expected = {
+      id: '::14::',
+      name: 'Merleau-Ponty'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
+
+  g.test('works with different levels of nesting', t => {
+    const templates = {
+      user: {
+        base: {
+          id1: 1,
+          nested: {
+            id2: 2,
+            nested: {
+              id3: 3
+            }
           }
+        },
+
+        afterBuild: user => {
+          user.id1 = `__${ user.id1 }__`
+          user.nested.id2 = `__${ user.nested.id2 }__`
+          user.nested.nested.id3 = `__${ user.nested.nested.id3 }__`
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('user')
+
+    const expected = {
+      id1: '__1__',
+      nested: {
+        id2: '__2__',
+        nested: {
+          id3: '__3__'
         }
       }
     }
 
-    const factory = new Factory(templates)
-    const result = factory.build('user', {id: 5, address: {city: 'Kong Hong'}})
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
 
-    t.equal(result.id, 5, `unexpected result ${result.id}`)
-    t.equal(result.name, 'Lisa Mona', `unexpected result ${result.name}`)
-    t.equal(result.address.city, 'Kong Hong', `unexpected result ${result.name}`)
+  g.test('throws an error if callback is not a function', t => {
+    const templates = {
+      user: {
+        base: {
+          name: 'Herkues'
+        },
+
+        afterBuild: 'not a function'
+      }
+    }
+    const factory = new Factory(templates)
+
+    t.throws(() => factory.build('user'), new Error('Argument Error'), 'throws up')
     t.end()
   })
 
   g.end()
 })
 
-test('building with traits', g => {
-  g.test('with statics objects', t => {
+test('building objects with traits', g => {
+  g.test('adds a trait-property', t => {
     const templates = {
       user: {
         base: {
-          name: 'Jo',
+          name: 'Ashish',
           admin: false
         },
         admin: {
@@ -125,114 +195,175 @@ test('building with traits', g => {
         }
       }
     }
-
     const factory = new Factory(templates)
     const result = factory.build('user', 'admin')
 
-    t.equal(result.admin, true, `unexpected result ${result.admin}`)
+    const expected = {
+      name: 'Ashish',
+      admin: true
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
-  g.test('with dynamic objects and custom attributes', t => {
+  g.test('does not mutate the base object', t => {
     const templates = {
       user: {
         base: {
-          id: '{{ id }}',
-          name: 'Nina',
-          admin: false,
-          registered: '{{ registered }}'
+          name: 'Flora'
+        },
+        trait: {
+          name: 'Fauna'
+        }
+      }
+    }
+    const factory = new Factory(templates)
+
+    const result1 = factory.build('user')
+    t.equal(result1.name, 'Flora')
+
+    const result2 = factory.build('user', 'trait')
+    t.equal(result2.name, 'Fauna')
+
+    const result3 = factory.build('user')
+    t.equal(result3.name, 'Flora')
+
+    t.end()
+  })
+
+  g.test('works with dependent properties', t => {
+    const templates = {
+      user: {
+        base: {
+          name: 'Ashish',
+          admin: false
         },
         admin: {
-          admin: true,
-          adminId: 'A{{ id }}'
+          admin: true
         },
-        options: {
-          generateId: rand => 4,
-          generateRegistered: rand => true
+        afterBuild: user => {
+          user.notAdmin = !user.admin
         }
       }
     }
-
     const factory = new Factory(templates)
-    const result = factory.build('user', 'admin', {age: 30})
+    const result = factory.build('user', 'admin')
 
-    t.equal(result.id, 4, `unexpected result ${result.id}`)
-    t.equal(result.adminId, 'A4', `unexpected result ${result.adminId}`)
-    t.equal(result.admin, true, `unexpected result ${result.admin}`)
-    t.equal(result.age, 30, `unexpected result ${result.age}`)
-    t.equal(result.registered, true, `unexpected result ${result.registered}`)
-    t.end()
-  })
-
-  g.test('does not mutate base-templates', t => {
-    const templates = {
-      user: {
-        base: {
-          age: 30
-        },
-
-        old: {
-          age: 80
-        }
-      }
+    const expected = {
+      name: 'Ashish',
+      admin: true,
+      notAdmin: false
     }
 
-    const factory = new Factory(templates)
-    const user1 = factory.build('user')
-    const user2 = factory.build('user', 'old')
-    const user3 = factory.build('user')
-
-    t.equal(user1.age, 30, `unexpected result ${user1.age}`)
-    t.equal(user2.age, 80, `unexpected result ${user2.age}`)
-    t.equal(user3.age, 30, `unexpected result ${user3.age}`)
-    t.end()
-  })
-
-  g.test('throws an error if trait does not exist', t => {
-    const templates = {
-      user: {
-        base: {
-          name: 'So Yang'
-        }
-      }
-    }
-
-    const factory = new Factory(templates)
-    t.throws(() => factory.build('user', 'admin'), 'should throw error')
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
   g.end()
 })
 
-test('building multiple objects', g => {
-  g.test('does not use the same seed for subsequent compilers', t => {
+test('with custom properties', g => {
+  g.test('adds a property', t => {
     const templates = {
-      user: {
+      movie: {
         base: {
-          id: '{{ id }}'
-        },
-        options: {
-          generateId: rand => rand.string(10)
+          title: 'Tokyo Story'
         }
       }
     }
-
     const factory = new Factory(templates)
-    const user1 = factory.build('user')
-    const user2 = factory.build('user')
-    const user3 = factory.build('user')
-    const user4 = factory.build('user')
-    const user5 = factory.build('user')
-    const user6 = factory.build('user')
+    const result = factory.build('movie', {
+      title: 'Seven Samurai'
+    })
 
-    t.notEqual(user1.id, user2.id, `did not expect equality of ${user1.id}`)
-    t.notEqual(user2.id, user3.id, `did not expect equality of ${user2.id}`)
-    t.notEqual(user3.id, user4.id, `did not expect equality of ${user3.id}`)
-    t.notEqual(user4.id, user5.id, `did not expect equality of ${user4.id}`)
-    t.notEqual(user5.id, user6.id, `did not expect equality of ${user5.id}`)
+    const expected = {
+      title: 'Seven Samurai'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
+
+  g.test('is available to dependent properties', t => {
+    const templates = {
+      movie: {
+        base: {
+          title: 'Enter the Dragon'
+        },
+        afterBuild: movie => {
+          movie.titleCopy = `${ movie.title }`
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('movie', {
+      title: 'Seven Samurai'
+    })
+
+    const expected = {
+      title: 'Seven Samurai',
+      titleCopy: 'Seven Samurai'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
+
+  g.test('overwrites trait-properties', t => {
+    const templates = {
+      movie: {
+        base: {
+          title: 'Shortbus'
+        },
+        longMovie: {
+          duration: '400min'
+        },
+        afterBuild: movie => {
+          movie.titleCopy = `${ movie.title }`
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('movie', 'longMovie', {
+      title: 'Love Exposure'
+    })
+
+    const expected = {
+      title: 'Love Exposure',
+      duration: '400min',
+      titleCopy: 'Love Exposure'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.end()
+  })
+
+  g.test('overwrites dependent-properties', t => {
+    const templates = {
+      user: {
+        base: {},
+        afterBuild: user => {
+          user.name = 'Alice in Wonderland'
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('user', {
+      name: 'Alice Miller'
+    })
+
+    const expected = {
+      name: 'Alice Miller'
+    }
+
+    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
     t.end()
   })
 
   g.end()
+})
+
+test('A big and complex example', t => {
+  t.end()
 })

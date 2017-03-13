@@ -1,7 +1,39 @@
-# The Chocolate Factory
+## Classes
 
-A simple template-based object-builder with some dynamic capabilities.
+<dl>
+<dt><a href="#ChocolateFactory">ChocolateFactory</a></dt>
+<dd><p>ChocolateFactory builds objects from templates by copying
+and replacing functions with their return values. Also provides
+an afterBuild-hook.</p>
+</dd>
+<dt><a href="#TemplateCompiler">TemplateCompiler</a></dt>
+<dd></dd>
+</dl>
 
+<a name="ChocolateFactory"></a>
+
+## ChocolateFactory
+ChocolateFactory builds objects from templates by copying
+and replacing functions with their return values. Also provides
+an afterBuild-hook.
+
+**Kind**: global class  
+
+* [ChocolateFactory](#ChocolateFactory)
+    * [new ChocolateFactory(templates)](#new_ChocolateFactory_new)
+    * [.build(name, [trait], attributes)](#ChocolateFactory+build) ⇒ <code>Object</code>
+
+<a name="new_ChocolateFactory_new"></a>
+
+### new ChocolateFactory(templates)
+Sets up a ChocolateFactory instance
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| templates | <code>Object</code> | The specifications to be used when   assembling an object |
+
+**Example**  
 A new factory has to be loaded with a templates-object in a special format
 where each model to be built needs its own key (the model-name):
 
@@ -47,21 +79,6 @@ const factory = new ChocolateFactory(templates)
 
 const user = factory.build('user')
 const admin = factory.build('user', 'admin')
-
-// this generates the expected static default objects
-
-// user
-{
-  name: 'Tsukasa',
-  age: 31
-}
-
-// admin
-{
-  name: 'Tsukasa',
-  age: 31,
-  isAdmin: true
-}
 ```
 
 ### 2. Dynamic values through functions
@@ -95,8 +112,7 @@ new ChocolateFactory(templates).build('user')
 
 A third approach to creating objects involves an `afterBuild`-callback
 that may be defined as part of the template. It gets called after the
-object has been assembled and gets the object passed in just before it's
-returned to the caller.
+object has been assembled and is passed in the object.
 
 **Notice**: The callback is expected to mutate the object.
 
@@ -113,7 +129,6 @@ const templates = {
     },
 
     afterBuild: user => {
-      // the token depends on the random id
       user.token = `${ user.name }::${ user.id }`
     }
   }
@@ -151,53 +166,29 @@ const user = factory.build('user', {
 
 Of course, the different approaches integrate well with each other. An
 object could be generated with a trait, have some dependent properties
-and still accept custom properties. As a final, and more complex scenario,
-let's consider the following example:
+and still accept custom properties. Here's a final, more complex example:
 
 ```js
-/***
- * Setting up an association
- *
- * Say we have users and messages and we'd like to associate them such
- * that we know that a message belongs to a particular user. We therefore
- * store a foreign key 'userId' with each message.
- *
- * But there's a catch: each message should also have a token that depends on
- * its own id and its userId. This token is a 'dependent property' because
- * it depends on other properties of the message, so we define it via an
- * 'afterBuild'-callback so it's computed after the rest of the object
- * has been assembled.
- *
- * Here's how we can generate some testing data that has
- * the required structure.
- */
-
-// let's setup the templates
 const templates = {
   user: {
     base: {
-      // the user has a random id
       id: () => Math.floor(Math.random() * 100),
       name: 'No Buddy',
+    },
+
+    admin: {
+      isAdmin: true
     }
   },
 
   message: {
     base: {
-      // each message also has a random id
       id: () => Math.floor(Math.random() * 100),
-      text: faker.lorem.sentence(),
-
-      // in the absence of a userId, we generate a ranom one
-      userId: () => Math.floor(Math.random() * 100)
-    },
-
-    important: {
-      urgent: true
+      userId: () => Math.floor(Math.random() * 100),
+      text: faker.lorem.sentence()
     },
 
     afterBuild: message => {
-      // the token depends on both the id and userId
       message.token = `${ message.id }::${ message.userId }`
     }
   }
@@ -205,36 +196,41 @@ const templates = {
 
 const factory = new ChocolateFactory(templates)
 
-// create a user (with a random id)
-const user = factory.build('user')
-
-// associate message and user by specifying the forein key
+const user = factory.build('user', 'admin')
 const message = factory.build('message', 'important', {
   userId: user.id
 })
 
-// this results in something like the following two objects
 
-// user
-{
-  // a random id
-  id: 123,
-  name: 'No Buddy'
-}
-
-// message
-{
-  // a random id
-  id: 456,
-
-  // the manually set userId
-  userId: 123,
-  text: 'lorem ipsum',
-
-  // a property that belongs to the trait
-  urgent: true,
-
-  // the token is valid event though the userId was set manually
-  token: '456::123'
-}
 ```
+<a name="ChocolateFactory+build"></a>
+
+### chocolateFactory.build(name, [trait], attributes) ⇒ <code>Object</code>
+Wrapper function that delegates creation of objects
+
+**Kind**: instance method of <code>[ChocolateFactory](#ChocolateFactory)</code>  
+**Returns**: <code>Object</code> - object - the compiled object  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the model to construct |
+| [trait] | <code>string</code> | The variant of the model to construct (optional).   Note: if no trait is given, the second argument will be attributes |
+| attributes | <code>Object</code> | Additional custom attributes to set. Custom   attributes will overwrite even callback-results |
+
+<a name="TemplateCompiler"></a>
+
+## TemplateCompiler
+**Kind**: global class  
+<a name="TemplateCompiler.evaluate"></a>
+
+### TemplateCompiler.evaluate(template) ⇒ <code>Object</code>
+Replaces functions on the template with their return-values
+
+**Kind**: static method of <code>[TemplateCompiler](#TemplateCompiler)</code>  
+**Returns**: <code>Object</code> - compiledObject - A copy of the original object
+  where functions are replaced with values  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| template | <code>Object</code> | A JavaScript object that defines what the   final object should look like. Functions will be invoked. |
+

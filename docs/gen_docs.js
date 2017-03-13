@@ -5,10 +5,9 @@ import { version } from '../package.json'
 
 let content = jsdoc2md.renderSync({
   files: [
-    'index.js',
-    'lib/*.js'
+    './lib/*.js'
   ],
   version: version
 })
 
-fs.writeFileSync('README.md', content)
+fs.writeFileSync('./docs/docs.md', content)
