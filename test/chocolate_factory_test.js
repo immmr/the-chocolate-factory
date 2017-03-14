@@ -1,5 +1,5 @@
 import {test} from 'tap'
-import Factory from '../lib/chocolate_factory'
+import Factory from '../lib'
 
 test('creating basic objects', g => {
   g.test('creates a user', t => {
@@ -19,7 +19,7 @@ test('creating basic objects', g => {
       name: 'Claire'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -41,7 +41,7 @@ test('creating basic objects', g => {
       text: 'Say what?'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -61,7 +61,7 @@ test('creating basic objects', g => {
       name: 'Foucault'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -84,7 +84,7 @@ test('setting dependent properties', g => {
         },
 
         afterBuild: user => {
-          user.token = `::${ user.id }::`
+          user.token = `::${user.id}::`
         }
       }
     }
@@ -97,7 +97,7 @@ test('setting dependent properties', g => {
       token: '::14::'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -110,7 +110,7 @@ test('setting dependent properties', g => {
         },
 
         afterBuild: user => {
-          user.id = `::${ user.id }::`
+          user.id = `::${user.id}::`
         }
       }
     }
@@ -122,7 +122,7 @@ test('setting dependent properties', g => {
       name: 'Merleau-Ponty'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -140,9 +140,9 @@ test('setting dependent properties', g => {
         },
 
         afterBuild: user => {
-          user.id1 = `__${ user.id1 }__`
-          user.nested.id2 = `__${ user.nested.id2 }__`
-          user.nested.nested.id3 = `__${ user.nested.nested.id3 }__`
+          user.id1 = `__${user.id1}__`
+          user.nested.id2 = `__${user.nested.id2}__`
+          user.nested.nested.id3 = `__${user.nested.nested.id3}__`
         }
       }
     }
@@ -159,7 +159,7 @@ test('setting dependent properties', g => {
       }
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -203,7 +203,7 @@ test('building objects with traits', g => {
       admin: true
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -256,7 +256,7 @@ test('building objects with traits', g => {
       notAdmin: false
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -281,7 +281,7 @@ test('with custom properties', g => {
       title: 'Seven Samurai'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -292,7 +292,7 @@ test('with custom properties', g => {
           title: 'Enter the Dragon'
         },
         afterBuild: movie => {
-          movie.titleCopy = `${ movie.title }`
+          movie.titleCopy = `${movie.title}`
         }
       }
     }
@@ -306,7 +306,7 @@ test('with custom properties', g => {
       titleCopy: 'Seven Samurai'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -320,7 +320,7 @@ test('with custom properties', g => {
           duration: '400min'
         },
         afterBuild: movie => {
-          movie.titleCopy = `${ movie.title }`
+          movie.titleCopy = `${movie.title}`
         }
       }
     }
@@ -335,7 +335,7 @@ test('with custom properties', g => {
       titleCopy: 'Love Exposure'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
@@ -357,13 +357,103 @@ test('with custom properties', g => {
       name: 'Alice Miller'
     }
 
-    t.same(result, expected, `unexpected result ${ JSON.stringify(result) }`)
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
   g.end()
 })
 
-test('A big and complex example', t => {
-  t.end()
+test('#_evaluate', g => {
+  g.test('creates a shallow static object', t => {
+    const template = {
+      id: 1,
+      name: 'Claire'
+    }
+    t.same(new Factory()._evaluate(template), template)
+    t.end()
+  })
+
+  g.test('creates a nested static object', t => {
+    const template = {
+      id: 1,
+      name: 'Claire',
+      address: {
+        street: 'Sesame street 5'
+      }
+    }
+    t.same(new Factory()._evaluate(template), template)
+    t.end()
+  })
+
+  g.test('creates a deeply nested static object', t => {
+    const template = {
+      id: 1,
+      name: 'Claire',
+      interests: {
+        recent: {
+          professional: 'painting',
+          hobby: 'how should I know'
+        }
+      }
+    }
+    t.same(new Factory()._evaluate(template), template)
+    t.end()
+  })
+
+  g.test('creates a defensive copy of the given object', t => {
+    const template = {
+      id: 1
+    }
+
+    const result = new Factory()._evaluate(template)
+    t.same(result.id, 1, `unexpected result ${result.id}`)
+
+    // make sure result cannot be mutated
+    template.id = 2
+    t.same(result.id, 1, `unexpected result ${result.id}`)
+    t.end()
+  })
+
+  g.test('evaluates a simple function', t => {
+    const template = {
+      id: () => 12,
+      name: 'Ernesto'
+    }
+    const result = new Factory()._evaluate(template)
+    const expected = {
+      id: 12,
+      name: 'Ernesto'
+    }
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.end()
+  })
+
+  g.test('evaluates nested functions', t => {
+    const template = {
+      id1: () => 1,
+      nested: {
+        id2: () => 2,
+        nested: {
+          id3: () => 3
+        }
+      }
+    }
+    const result = new Factory()._evaluate(template)
+    const expected = {
+      id1: 1,
+      nested: {
+        id2: 2,
+        nested: {
+          id3: 3
+        }
+      }
+    }
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.end()
+  })
+
+  g.end()
 })
+
+test('A big and complex example')

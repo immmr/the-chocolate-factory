@@ -173,37 +173,38 @@ let's consider the following example:
  */
 
 // let's setup the templates
-const templates = {
-  user: {
-    base: {
-      // the user has a random id
-      id: () => Math.floor(Math.random() * 100),
-      name: 'No Buddy',
-    }
-  },
-
-  message: {
-    base: {
-      // each message also has a random id
-      id: () => Math.floor(Math.random() * 100),
-      text: faker.lorem.sentence(),
-
-      // in the absence of a userId, we generate a ranom one
-      userId: () => Math.floor(Math.random() * 100)
-    },
-
-    important: {
-      urgent: true
-    },
-
-    afterBuild: message => {
-      // the token depends on both the id and userId
-      message.token = `${ message.id }::${ message.userId }`
-    }
+const userTemplate = {
+  base: {
+    // the user has a random id
+    id: () => Math.floor(Math.random() * 100),
+    name: 'No Buddy',
   }
 }
 
-const factory = new ChocolateFactory(templates)
+const messageTemplate = {
+  base: {
+    // each message also has a random id
+    id: () => Math.floor(Math.random() * 100),
+    text: faker.lorem.sentence(),
+
+    // in the absence of a userId, we generate a ranom one
+    userId: () => Math.floor(Math.random() * 100)
+  },
+
+  important: {
+    urgent: true
+  },
+
+  afterBuild: message => {
+    // the token depends on both the id and userId
+    message.token = `${ message.id }::${ message.userId }`
+  }
+}
+
+const factory = new ChocolateFactory({
+  user: userTemplate,
+  message: messageTemplate
+})
 
 // create a user (with a random id)
 const user = factory.build('user')
@@ -229,12 +230,14 @@ const message = factory.build('message', 'important', {
 
   // the manually set userId
   userId: 123,
-  text: 'lorem ipsum',
-
-  // a property that belongs to the trait
-  urgent: true,
 
   // the token is valid event though the userId was set manually
-  token: '456::123'
+  token: '456::123',
+
+  // a property that was generated dynamically
+  text: 'lorem ipsum',
+
+  // a static property that belongs to the trait
+  urgent: true
 }
 ```

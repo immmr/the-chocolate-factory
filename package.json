@@ -7,7 +7,7 @@
     "pretest": "standard **/*.js",
     "test": "babel-tap test/**/*_test.js",
     "test-watch": "nodemon --exec 'npm test'",
-    "test-file": "babel-tap test/factory_test.js",
+    "test-file": "babel-tap test/chocolate_factory_test.js --reporter=spec",
     "test-file-watch": "nodemon --exec 'npm run test-file'",
     "docs": "babel-node './docs/gen_docs.js'",
     "babel-node": "babel-node",
