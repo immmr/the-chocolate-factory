@@ -501,11 +501,42 @@ test('allowing arrays as keys', g => {
     }
     const factory = new Factory(templates)
     const result = factory.build('collection', 'even')
-
     const expected = { values: [2, 4, 6] }
 
     t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.type(result.values, 'Array', 'should have type array')
+    t.end()
+  })
+
+  g.test('works with overrides', t => {
+    const templates = {
+      collection: {
+        values: ['a', 'b', 'c']
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('collection', {
+      values: ['x']
+    })
+    const expected = { values: ['x'] }
+
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.end()
+  })
+
+  g.test('works with overriding return values', t => {
+    const templates = {
+      collection: {
+        values: () => ['a', 'b', 'c']
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('collection', {
+      values: ['x']
+    })
+    const expected = { values: ['x'] }
+
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
     t.end()
   })
 
