@@ -456,4 +456,58 @@ test('#_evaluate', g => {
   g.end()
 })
 
-test('A big and complex example')
+test('allowing arrays as keys', g => {
+  g.test('works on a single property', t => {
+    const templates = {
+      collection: {
+        base: { values: [1, 2, 3] }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('collection')
+
+    const expected = { values: [1, 2, 3] }
+
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.type(result.values, 'Array', 'should have type array')
+    t.end()
+  })
+
+  g.test('works with nesting', t => {
+    const templates = {
+      collection: {
+        base: {
+          level2: { values2: [4, 5, 6] }
+        }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('collection')
+
+    const expected = {
+      level2: { values2: [4, 5, 6] }
+    }
+
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.type(result.level2.values2, 'Array', 'should have type array')
+    t.end()
+  })
+
+  g.test('works with traits', t => {
+    const templates = {
+      collection: {
+        even: { values: [2, 4, 6] }
+      }
+    }
+    const factory = new Factory(templates)
+    const result = factory.build('collection', 'even')
+
+    const expected = { values: [2, 4, 6] }
+
+    t.same(result, expected, `unexpected result ${JSON.stringify(result)}`)
+    t.type(result.values, 'Array', 'should have type array')
+    t.end()
+  })
+
+  g.end()
+})
