@@ -6,6 +6,8 @@ A new factory has to be loaded with a templates-object in a special format
 where each model to be built needs its own key (the model-name):
 
 ```js
+const ChocolateFactory = require('the-chocolate-factory')
+
 const templates = {
   user: {
     // ...
@@ -154,24 +156,21 @@ object could be generated with a trait, have some dependent properties
 and still accept custom properties. As a final, and more complex scenario,
 let's consider the following example:
 
-```js
-/***
- * Setting up an association
- *
- * Say we have users and messages and we'd like to associate them such
- * that we know that a message belongs to a particular user. We therefore
- * store a foreign key 'userId' with each message.
- *
- * But there's a catch: each message should also have a token that depends on
- * its own id and its userId. This token is a 'dependent property' because
- * it depends on other properties of the message, so we define it via an
- * 'afterBuild'-callback so it's computed after the rest of the object
- * has been assembled.
- *
- * Here's how we can generate some testing data that has
- * the required structure.
- */
+### Use Case: Setting up an Association
+Say we have users and messages and we'd like to associate them such
+that we know that a message belongs to a particular user. We therefore
+store a foreign key 'userId' with each message.
 
+But there's a catch: each message should also have a token that depends on
+its own id and its userId. This token is a 'dependent property' because
+it depends on other properties of the message, so we define it via an
+'afterBuild'-callback so it's computed after the rest of the object
+has been assembled.
+
+Here's how we can generate some testing data that has
+the required structure.
+
+```js
 // let's setup the templates
 const userTemplate = {
   base: {
